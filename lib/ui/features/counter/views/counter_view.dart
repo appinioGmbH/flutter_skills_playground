@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../view_models/counter_view_model.dart';
 
 class CounterView extends StatelessWidget {
@@ -15,6 +16,13 @@ class CounterView extends StatelessWidget {
           appBar: AppBar(
             backgroundColor: Theme.of(context).colorScheme.inversePrimary,
             title: const Text('Flutter Demo Home Page'),
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.info_outline),
+                tooltip: 'Details',
+                onPressed: () => context.push('/details'),
+              ),
+            ],
           ),
           body: Center(
             child: Column(
@@ -24,6 +32,12 @@ class CounterView extends StatelessWidget {
                 Text(
                   '${viewModel.count}',
                   style: Theme.of(context).textTheme.headlineMedium,
+                ),
+                const SizedBox(height: 32),
+                OutlinedButton.icon(
+                  onPressed: () => context.push('/details'),
+                  icon: const Icon(Icons.arrow_forward),
+                  label: const Text('Go to Details'),
                 ),
               ],
             ),
