@@ -4,10 +4,13 @@ description: Configure `MaterialApp.router` using a package like `go_router` for
 metadata:
   model: models/gemini-3.1-pro-preview
   last_modified: Tue, 21 Apr 2026 21:08:03 GMT
+alwaysApply: true
 ---
+
 # Implementing Routing and Deep Linking
 
 ## Contents
+
 - [Core Concepts](#core-concepts)
 - [Workflow: Initializing the Application and Router](#workflow-initializing-the-application-and-router)
 - [Workflow: Configuring Platform Deep Linking](#workflow-configuring-platform-deep-linking)
@@ -16,7 +19,7 @@ metadata:
 
 ## Core Concepts
 
-Use the `go_router` package for declarative routing in Flutter. It provides a robust API for complex routing scenarios, deep linking, and nested navigation. 
+Use the `go_router` package for declarative routing in Flutter. It provides a robust API for complex routing scenarios, deep linking, and nested navigation.
 
 - **GoRouter**: The central configuration object defining the application's route tree.
 - **GoRoute**: A standard route mapping a URL path to a Flutter screen.
@@ -28,6 +31,7 @@ Use the `go_router` package for declarative routing in Flutter. It provides a ro
 Follow this workflow to bootstrap a new Flutter application with `go_router` and configure the root routing mechanism.
 
 ### Task Progress
+
 - [ ] Create the Flutter application.
 - [ ] Add the `go_router` dependency.
 - [ ] Configure the URL strategy for web/deep linking.
@@ -35,7 +39,9 @@ Follow this workflow to bootstrap a new Flutter application with `go_router` and
 - [ ] Bind the router to `MaterialApp.router`.
 
 ### 1. Scaffold the Application
+
 Run the following commands to create the app and add the required routing package:
+
 ```bash
 flutter create <app-name>
 cd <app-name>
@@ -43,6 +49,7 @@ flutter pub add go_router
 ```
 
 ### 2. Configure the Router
+
 Define a top-level `GoRouter` instance. Handle authentication or state-based routing using the `redirect` parameter.
 
 ```dart
@@ -91,13 +98,16 @@ class MyApp extends StatelessWidget {
 Configure the native platforms to intercept specific URLs and route them into the Flutter application.
 
 ### Task Progress
+
 - [ ] Determine target platforms (iOS, Android, or both).
 - [ ] Apply conditional configuration for Android (Manifest + Asset Links).
 - [ ] Apply conditional configuration for iOS (Plist + Entitlements + AASA).
 - [ ] Run validator -> review errors -> fix.
 
 ### If configuring for Android:
+
 1. **Modify `AndroidManifest.xml`**: Add the intent filter inside the `<activity>` tag for `.MainActivity`.
+
 ```xml
 <intent-filter android:autoVerify="true">
     <action android:name="android.intent.action.VIEW" />
@@ -107,48 +117,62 @@ Configure the native platforms to intercept specific URLs and route them into th
     <data android:scheme="https" />
 </intent-filter>
 ```
+
 2. **Host `assetlinks.json`**: Serve the following JSON at `https://yourdomain.com/.well-known/assetlinks.json`.
+
 ```json
-[{
-  "relation": ["delegate_permission/common.handle_all_urls"],
-  "target": {
-    "namespace": "android_app",
-    "package_name": "com.yourcompany.yourapp",
-    "sha256_cert_fingerprints": ["YOUR_SHA256_FINGERPRINT"]
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.yourcompany.yourapp",
+      "sha256_cert_fingerprints": ["YOUR_SHA256_FINGERPRINT"]
+    }
   }
-}]
+]
 ```
 
 ### If configuring for iOS:
-1. **Modify `Info.plist`**: Opt-in to Flutter's default deep link handler. 
-*Note: If using a third-party deep linking plugin (e.g., `app_links`), set this to `NO` to prevent conflicts.*
+
+1. **Modify `Info.plist`**: Opt-in to Flutter's default deep link handler.
+   _Note: If using a third-party deep linking plugin (e.g., `app_links`), set this to `NO` to prevent conflicts._
+
 ```xml
 <key>FlutterDeepLinkingEnabled</key>
 <true/>
 ```
+
 2. **Modify `Runner.entitlements`**: Add the associated domain.
+
 ```xml
 <key>com.apple.developer.associated-domains</key>
 <array>
   <string>applinks:yourdomain.com</string>
 </array>
 ```
+
 3. **Host `apple-app-site-association`**: Serve the following JSON (without a `.json` extension) at `https://yourdomain.com/.well-known/apple-app-site-association`.
+
 ```json
 {
   "applinks": {
     "apps": [],
-    "details": [{
-      "appIDs": ["TEAM_ID.com.yourcompany.yourapp"],
-      "paths": ["*"],
-      "components": [{"/": "/*"}]
-    }]
+    "details": [
+      {
+        "appIDs": ["TEAM_ID.com.yourcompany.yourapp"],
+        "paths": ["*"],
+        "components": [{ "/": "/*" }]
+      }
+    ]
   }
 }
 ```
 
 ### Validation Loop
+
 Run validator -> review errors -> fix.
+
 - **Android**: Test using ADB.
   ```bash
   adb shell 'am start -a android.intent.action.VIEW -c android.intent.category.BROWSABLE -d "https://yourdomain.com/details/123"' com.yourcompany.yourapp
@@ -163,6 +187,7 @@ Run validator -> review errors -> fix.
 Use `StatefulShellRoute` to implement persistent UI shells (like a bottom navigation bar) that maintain the state of their child routes.
 
 ### Task Progress
+
 - [ ] Define `StatefulShellRoute.indexedStack` in the `GoRouter` configuration.
 - [ ] Create `StatefulShellBranch` instances for each navigation tab.
 - [ ] Implement the shell widget using `StatefulNavigationShell`.
@@ -201,6 +226,7 @@ final GoRouter _router = GoRouter(
 ## Examples
 
 ### High-Fidelity Shell Widget Implementation
+
 Implement the UI shell that consumes the `StatefulNavigationShell` to handle branch switching.
 
 ```dart
@@ -238,6 +264,7 @@ class ScaffoldWithNavBar extends StatelessWidget {
 ```
 
 ### Programmatic Navigation
+
 Use the `context.go()` and `context.push()` extension methods provided by `go_router`.
 
 ```dart
